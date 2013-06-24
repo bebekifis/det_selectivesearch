@@ -1,0 +1,11 @@
+#ignored folders and files
+ 
+.directory
+monkey2011
+monkeyboxes2
+SelectiveSearchPcode
+flow_code.zip
+
+
+SelectiveSearch/TRECVID_experiment/demoimgs
+SelectiveSearch/TRECVID_experiment/TREC13
