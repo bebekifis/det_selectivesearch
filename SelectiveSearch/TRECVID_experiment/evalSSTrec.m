@@ -1,16 +1,18 @@
 %% do evaluation for selective search
 addpath('../');
 addpath('../Dependencies/');
-addpath('/home/zhenyang/Workspace/Data/TRECVID/TRECVID2013/anno_tools/TRECanno/');
+addpath('/home/zhenyang/Workspace/data/TRECVID/TRECVID2013/anno_tools/TRECanno/');
 
 gtClasses = {'Airplane', 'Boat_Ship', 'Bridges', 'Bus', 'Chair', ... 
              'Flags', 'Hand', 'Motorcycle', 'Quadruped', 'Telephones'};
 datasetfile = 'trec2012develtest_All_Merged.txt';
 % ss_strategy = 'selectivesearch-fast';
-ss_strategy = 'magflow-simple';
+% ss_strategy = 'magflow-simple';
 % ss_strategy = 'selectivesearch+magflow-fast';
 % ss_strategy = 'selectivesearch-simple';
-TREC_gtBoxPath = '/home/zhenyang/Workspace/Data/TRECVID/TRECVID2013/trec2012local/Annotations';
+ss_strategy = 'TS';
+
+TREC_gtBoxPath = '/home/zhenyang/Workspace/data/TRECVID/TRECVID2013/trec2012local/Annotations';
 TREC_ssBoxPath = ['./TREC13/MyBBoxesMat/' ss_strategy '/%s.mat'];
 TREC_ssDefBoxPath = './TREC13/MyBBoxesMat/selectivesearch-fast/%s.mat';
 
@@ -50,7 +52,7 @@ else
     load(gtDataset);
 end
 
-% load selective search boxes
+% Load selective search boxes
 ssBoxes = cell(length(mergedImgfiles), 1); 
 for j=1:length(mergedImgfiles)
 

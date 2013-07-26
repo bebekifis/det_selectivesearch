@@ -10,9 +10,10 @@ colorTypes = {'Hsv', 'Lab', 'RGI', 'H', 'Intensity'};
 
 % Here you specify which similarity functions to use in merging
 % simFunctionHandles = {@SSSimColourTextureSizeFillOrig, @SSSimTextureSizeFill, @SSSimBoxFillOrig, @SSSimSize};
-simFunctionHandles = {@SSSimColourTextureFlowSizeFillOrig, @SSSimTextureFlowSizeFill};
+% simFunctionHandles = {@SSSimColourTextureFlowSizeFillOrig, @SSSimTextureFlowSizeFill};
 % simFunctionHandles = {@SSSimColourSize, @SSSimFlowSize, @SSSimColourFlowSize};
 % simFunctionHandles = {@SSSimColourSize, @SSSimTextureSize, @SSSimColourTextureSize};
+simFunctionHandles = {@SSSimFlowSize};
 
 % Thresholds for the Felzenszwalb and Huttenlocher segmentation algorithm.
 % Note that by default, we set minSize = k, and sigma = 0.8.
@@ -24,17 +25,24 @@ sigma = 0.8;
 % minBoxWidth = 10;
 
 % Comment the following three lines for the 'quality' version
-colorTypes = colorTypes(1:2); % 'Fast' uses HSV and Lab
+% colorTypes = colorTypes(1:2); % 'Fast' uses HSV and Lab
 % simFunctionHandles = simFunctionHandles(1:2); % Two different merging strategies
-ks = ks(1:2);
+% ks = ks(1:2);
+
+% Single strategy
+colorTypes = colorTypes(1);
+ks = ks(1);
 
 % generate the boxes
 datasetfile = 'trec2012develtest_All_Merged.txt';
-ss_strategy = 'selectivesearch+magflow-fast';
+
+% ss_strategy = 'selectivesearch+flow-fast';
 % ss_strategy = 'flow-simple';
 % ss_strategy = 'selectivesearch-simple';
+ss_strategy = 'FoS';
+
 flow_method = 'classic+nl-fast';
-TRECImgPath = '/home/zhenyang/Workspace/Data/TRECVID/TRECVID2013/trec2012develtest/%s';
+TRECImgPath = '/home/zhenyang/Workspace/data/TRECVID/TRECVID2013/trec2012develtest/%s';
 TRECFlowPath = ['./TREC13/MyFlowMat/' flow_method '/%s.mat'];
 TRECBoxPath = ['./TREC13/MyBBoxesMat/' ss_strategy '/%s.mat'];
 % fprintf('After box extraction, boxes smaller than %d pixels will be removed\n', minBoxWidth);
@@ -48,7 +56,7 @@ for i=1:length(imgfiles)
     
     % check if exist
     bfilename = sprintf(TRECBoxPath, imgfiles{i});
-    if (exist(bfilename))
+    if (exist(bfilename, 'file'))
         continue;
     end
 
@@ -66,9 +74,9 @@ for i=1:length(imgfiles)
         nbSkips = nbSkips + 1;
         continue;
     end
-    % flowIm = NormalizeArray(imflow); % Make range [0 1].
-    magnitudeFlow = sqrt(imflow(:,:,1) .* imflow(:,:,2));
-    flowIm = NormalizeArray(magnitudeFlow);
+    flowIm = NormalizeArray(imflow); % Make range [0 1].
+    % magnitudeFlow = sqrt(imflow(:,:,1) .* imflow(:,:,2));
+    % flowIm = NormalizeArray(magnitudeFlow);
 
     idx = 1;
     for j=1:length(ks)

@@ -9,7 +9,9 @@ addpath('../Dependencies/');
 colorTypes = {'Hsv', 'Lab', 'RGI', 'H', 'Intensity'};
 
 % Here you specify which similarity functions to use in merging
-simFunctionHandles = {@SSSimColourTextureSizeFillOrig, @SSSimTextureSizeFill, @SSSimBoxFillOrig, @SSSimSize};
+% simFunctionHandles = {@SSSimColourTextureSizeFillOrig, @SSSimTextureSizeFill, @SSSimBoxFillOrig, @SSSimSize};
+% simFunctionHandles = {@SSSimColourSize};
+simFunctionHandles = {@SSSimTextureSize};
 
 % Thresholds for the Felzenszwalb and Huttenlocher segmentation algorithm.
 % Note that by default, we set minSize = k, and sigma = 0.8.
@@ -21,23 +23,39 @@ sigma = 0.8;
 % minBoxWidth = 10;
 
 % Comment the following three lines for the 'quality' version
-colorTypes = colorTypes(1:2); % 'Fast' uses HSV and Lab
-simFunctionHandles = simFunctionHandles(1:2); % Two different merging strategies
-ks = ks(1:2);
+% colorTypes = colorTypes(1:2); % 'Fast' uses HSV and Lab
+% simFunctionHandles = simFunctionHandles(1:2); % Two different merging strategies
+% ks = ks(1:2);
+
+% Single strategy
+colorTypes = colorTypes(1);
+ks = ks(1);
 
 % generate the boxes
 datasetfile = 'trec2012develtest_All_Merged.txt';
-ss_strategy = 'selectivesearch_fast';
-TRECImgPath = '/home/zhenyang/Workspace/Data/TRECVID/TRECVID2013/trec2012develtest/%s';
+
+% ss_strategy = 'selectivesearch_fast';
+% ss_strategy = 'CS';
+ss_strategy = 'TS';
+
+TRECImgPath = '/home/zhenyang/Workspace/data/TRECVID/TRECVID2013/trec2012develtest/%s';
 TRECBoxPath = ['./TREC13/MyBBoxesMat/' ss_strategy '/%s.mat'];
 % fprintf('After box extraction, boxes smaller than %d pixels will be removed\n', minBoxWidth);
 fprintf('Obtaining boxes for Trecvid 2013 devel and test set:\n');
 
 tic;
 imgfiles=textread(datasetfile,'%s');
+% For time-cost testing
+% imgfiles=imgfiles(1:10:5000);
 for i=1:length(imgfiles)
     fprintf('%d ', i);
     
+    % check if exist
+    bfilename = sprintf(TRECBoxPath, imgfiles{i});
+    if (exist(bfilename, 'file'))
+        continue;
+    end
+
     % 
     im = imread(sprintf(TRECImgPath, imgfiles{i}));
     idx = 1;
@@ -62,7 +80,7 @@ for i=1:length(imgfiles)
     % boxes = FilterBoxesWidth(boxes, minBoxWidth);
     boxes = BoxRemoveDuplicates(boxes);
 
-    bfilename = sprintf(TRECBoxPath, imgfiles{i});
+    % bfilename = sprintf(TRECBoxPath, imgfiles{i});
     [bfpath,~,~]=fileparts(bfilename);
     if (~exist(bfpath, 'dir'))
         mkdir(bfpath);
@@ -70,6 +88,5 @@ for i=1:length(imgfiles)
     save(bfilename, 'boxes');
 end
 toc
-
 
 
